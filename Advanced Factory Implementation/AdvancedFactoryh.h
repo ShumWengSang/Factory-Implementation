@@ -18,13 +18,24 @@ public:
 	template <typename T>
 	void Register(const char* name)
 	{
-		m_CreateFuncs[name] = &CreateFunc<T>;
+		m_FactoryMap[name] = &CreateFunc<T>;
 	}
 private:
 	template <typename T>
 	static Object* CreateFunc()
 	{
 		return new T;
+	}
+public:
+	Object * Create(const std::string &name)
+	{
+		FactoryMap::iterator it = m_FactoryMap.find(name);
+		if (it != m_FactoryMap.end())
+		{
+			CreateFn create_animal = it->second;
+			return create_animal();
+		}
+		return NULL;
 	}
 private:
 	typedef Object * (*CreateFn)(void);
